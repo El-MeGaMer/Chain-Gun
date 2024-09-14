@@ -12,6 +12,7 @@ public class Enemy : MonoBehaviour
 
     private float distance;
 
+
     // Start is called before the first frame update
     void Start()
     {
@@ -26,7 +27,7 @@ public class Enemy : MonoBehaviour
         direction.Normalize();
         float angle=Mathf.Atan2(direction.y,direction.x);
         
-        if (distance < 10){
+        if (distance < 20){
         transform.position=Vector2.MoveTowards(this.transform.position,player.transform.position,speed*Time.deltaTime);
         transform.rotation=Quaternion.Euler(Vector3.forward*angle); 
         }
