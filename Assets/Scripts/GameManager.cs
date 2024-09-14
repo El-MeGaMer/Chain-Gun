@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using Unity.Mathematics;
 using UnityEngine;
 
@@ -14,6 +15,9 @@ public class GameManager : MonoBehaviour
     [SerializeField] GameObject emptyNextLevelPrefab;
     [SerializeField] GameObject currentLevel;
     [SerializeField] GameObject nextLevel;
+
+    [SerializeField] TMP_Text scoreText;
+
     void Awake()
     {
         if (Instance != null && Instance != this)
@@ -30,6 +34,7 @@ public class GameManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        UpdateScore();
         /*currentLevel = Instantiate(currentLevel, new Vector3(0, 0), quaternion.identity);
         GameObject muroDerecha = currentLevel.transform.Find("Muro derecha").gameObject;
         Vector3 nextLevelPosition = new Vector3(muroDerecha.transform.position.x + 12, 0);
@@ -40,5 +45,10 @@ public class GameManager : MonoBehaviour
     void Update()
     {
 
+    }
+
+    void UpdateScore()
+    {
+        scoreText.text = "Score: " + score;
     }
 }
