@@ -75,9 +75,9 @@ public class Player : MonoBehaviour
         Vector3 newCamPos = camBasePos+Vector3.ClampMagnitude(lookDir*distnace, maxCamDistance);
         playerCam.transform.localPosition = Vector3.Lerp(camBasePos, newCamPos, camSpeed*Time.fixedDeltaTime);
 
-        print(lookDir);
-        print(transform.right);
-        print(Vector3.right);
+        // print(lookDir);
+        // print(transform.right);
+        // print(Vector3.right);
         BodySprite.transform.rotation = Quaternion.LookRotation(transform.forward, lookDir);
         //to lerp the gun
         // transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(body.velocity), rotAlpha);
