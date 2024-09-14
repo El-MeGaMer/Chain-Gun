@@ -3,14 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class MainMenu : MonoBehaviour
+public class GameOver : MonoBehaviour
 {
 
-    public void StartGame(){
-        SceneManager.LoadScene(2);
-    }
-    public void ExitGame(){
-        Application.Quit();
+    public void ReturnMainMenu(){
+        SceneManager.LoadScene(0);
     }
     // Start is called before the first frame update
     void Start()
