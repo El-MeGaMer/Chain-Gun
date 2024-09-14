@@ -13,6 +13,7 @@ public class EnemySpawner : MonoBehaviour
     private float MaxSpawnTime;
 
     private float TimeUntilSpawn;
+    private bool spawned = false;
 
     private void SetTimeUntilSpawn(){
         TimeUntilSpawn=Random.Range(MinSpawnTime, MaxSpawnTime);
@@ -30,7 +31,8 @@ public class EnemySpawner : MonoBehaviour
     void Update()
     {
         TimeUntilSpawn-=Time.deltaTime;
-        if(TimeUntilSpawn <= 0){
+        if(TimeUntilSpawn <= 0 && !spawned){
+            spawned = true;
             Instantiate(Enemy, transform.position, Quaternion.identity);
             SetTimeUntilSpawn();
         }

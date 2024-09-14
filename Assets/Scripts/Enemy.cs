@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -12,10 +13,13 @@ public class Enemy : MonoBehaviour
 
     private float distance;
 
+    [SerializeField] Sprite dedSprite;
+
     // Start is called before the first frame update
     void Start()
     {
-       player=GameObject.Find("Player");
+        //there is always one player script on the scene, so it would be faster to just return the first player that appears
+       player=FindObjectOfType<Player>().GameObject();
     }
 
     // Update is called once per frame
@@ -31,11 +35,17 @@ public class Enemy : MonoBehaviour
         transform.rotation=Quaternion.Euler(Vector3.forward*angle); 
         }
         if (distance <=1){
-            GameOver();
+            // GameOver();
         }
-
-        
     }
+
+    public void DeadTime(){
+        GetComponent<BoxCollider2D>().enabled = false;
+        GetComponent<SpriteRenderer>().sprite = dedSprite;
+        GetComponent<SpriteRenderer>().color = new Color(40f/255f, 5f/255f, 5/255f);
+        Destroy(this, .1f);
+    }
+
     void GameOver(){
         SceneManager.LoadScene(3);
     }

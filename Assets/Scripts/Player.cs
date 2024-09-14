@@ -2,10 +2,17 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.InputSystem;
+using UnityEditor.Rendering.LookDev;
 
 public class Player : MonoBehaviour
 {
+
+    [Header("Stats")]
+    [SerializeField]
+    private int health = 3;
+
 
     [Header("Movement")]
     [SerializeField]
@@ -17,12 +24,15 @@ public class Player : MonoBehaviour
     [SerializeField]
     public float dashMulti;
 
-    Vector2 direction = Vector2.zero;
-
-    public InputAction move;
-
+    [Header("Inputs")]
     [SerializeField]
     private Vector2 inertia;
+    Vector2 direction = Vector2.zero;
+    Vector3 lookDir;
+    private bool shoot = false;
+    public InputAction move;
+    public InputAction clickInput;
+
 
 
     [Header("Camera")]
@@ -39,27 +49,30 @@ public class Player : MonoBehaviour
     [Header("Visuals")]
     [SerializeField]
     SpriteRenderer BodySprite;
+    [SerializeField]
+    GameObject projectile;
 
     private void OnEnable(){
         move.Enable();
+        clickInput.Enable();
     }
     private void OnDisable(){
         move.Disable();
+        clickInput.Disable();
     }
 
     // Start is called before the first frame update
-    void Start(){
-        
-
+    void Awake(){
+        clickInput.performed += clickTime;
     }
 
     // Update is called once per frame
     void Update(){
         direction = move.ReadValue<Vector2>();
-
         mouseVec = playerCam.ScreenToWorldPoint(Input.mousePosition);
         
     }
+
 
     void FixedUpdate()
     {
@@ -68,14 +81,17 @@ public class Player : MonoBehaviour
         MouseTime();
     }
 
+    private void clickTime(InputAction.CallbackContext context){
+        Instantiate(projectile, transform.position+(lookDir*2), BodySprite.transform.rotation);
+    }
+
     private void MouseTime() {
-        Vector3 lookDir = new Vector3(mouseVec.x-transform.position.x, mouseVec.y-transform.position.y, 0); 
+        lookDir = new Vector3(mouseVec.x-transform.position.x, mouseVec.y-transform.position.y, 0); 
         float distnace = lookDir.magnitude;
         lookDir = lookDir.normalized;
         Vector3 newCamPos = camBasePos+Vector3.ClampMagnitude(lookDir*distnace, maxCamDistance);
         playerCam.transform.localPosition = Vector3.Lerp(camBasePos, newCamPos, camSpeed*Time.fixedDeltaTime);
 
-        // print(lookDir);
         // print(transform.right);
         // print(Vector3.right);
         BodySprite.transform.rotation = Quaternion.LookRotation(transform.forward, lookDir);
@@ -98,6 +114,19 @@ public class Player : MonoBehaviour
         if(Mathf.Abs(inertia.magnitude) <= 3) {
             inertia= Vector2.zero;
         }
-        transform.Translate(inertia*Time.deltaTime);
+        transform.Translate(inertia*Time.fixedDeltaTime);
+    }
+
+    //damage
+    public void TakeDmg() {
+        health--;
+        if(health <= 0){
+            StartCoroutine(GameOver());
+        }
+    }
+
+    private IEnumerator GameOver(){
+        yield return new WaitForSeconds(3);
+        SceneManager.LoadScene(3);
     }
 }
