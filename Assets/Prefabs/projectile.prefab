@@ -230,6 +230,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   direction: {x: 0, y: 0}
+  isPlayerProjectile: 1
   speed: 60
   ignorePlayer: 1
   autoDie: 1
