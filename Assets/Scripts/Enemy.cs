@@ -10,8 +10,6 @@ public class Enemy : MonoBehaviour
 
     public GameObject player;
 
-    public Transform gunPosition;
-
     public float speed;
 
     private float distance;
@@ -21,21 +19,31 @@ public class Enemy : MonoBehaviour
 
     [SerializeField]
     GameObject projectile;
+    [SerializeField]
+    SpriteRenderer GunSprite;
+    [SerializeField]
+    SpriteRenderer BodySprite;
+    [SerializeField]
+    customMuzzleAnim muzzle;
     private float shootInterval;
 
+        
+    [Header("Audio")]
+    [SerializeField]
+    List<AudioClip> clips;
+    [SerializeField]
+    AudioSource sors;
+    [SerializeField]
+    GameObject caseThing;
+
     private float shootTimer;
-
-    private float slashTime;
-    private float slashTimer;
-
-    bool isSlashing=false;
-
-    [SerializeField] Sprite dedSprite;
-    [SerializeField] Color dedColor;
+    
+    [SerializeField] Animator animator;
 
     // Start is called before the first frame update
     void Start()
     {
+        animator = GetComponent<Animator>();
         //there is always one player script on the scene, so it would be faster to just return the first player that appears
         player = FindObjectOfType<Player>().GameObject();
     }
@@ -66,8 +74,26 @@ public class Enemy : MonoBehaviour
 
         if (distance < viewDistance)
         {
+            animator.Play("enemyWalk");
             transform.position = Vector2.MoveTowards(this.transform.position, player.transform.position, speed * Time.deltaTime);
-            transform.rotation = Quaternion.Euler(Vector3.forward * angle);
+            GunSprite.transform.rotation = Quaternion.LookRotation(transform.forward, direction);
+
+            //set z priority
+            // if(direction.y >.8 || direction.x <.05){
+            //     GunSprite.sortingOrder = BodySprite.sortingOrder-1;
+            // }else{
+            //     GunSprite.sortingOrder = BodySprite.sortingOrder+1;
+            // }
+
+            Vector3 rotVec = GunSprite.gameObject.transform.right*(direction.x <.1?-1:1);
+            GunSprite.gameObject.transform.localPosition = 
+                rotVec*(.5f*(1-Mathf.Abs(direction.y)))+
+                Vector3.up*((1.2f-Mathf.Abs(direction.x))*(direction.y <0? -1: 0));
+            //flip the gun
+            GunSprite.flipX = direction.x < 0;
+
+
+
             if (typeEnemy != 1)
             {
                 if (shootTimer <= 0)
@@ -87,6 +113,9 @@ public class Enemy : MonoBehaviour
             // }
             shootTimer-= Time.deltaTime;
         }
+        else{
+            animator.Play("enIdle");
+        }
     //    if (distance <= 1)
     //    {
     //        // GameOver();
@@ -96,8 +125,10 @@ public class Enemy : MonoBehaviour
     public void DeadTime()
     {
         GetComponent<BoxCollider2D>().enabled = false;
-        GetComponent<SpriteRenderer>().sprite = dedSprite;
-        GetComponent<SpriteRenderer>().color = dedColor;
+        // GetComponent<SpriteRenderer>().sprite = dedSprite;
+        // GetComponent<SpriteRenderer>().color = dedColor;
+        sors.PlayOneShot(clips[Random.Range(1,2)]);
+        animator.Play("ded");
         Destroy(this);
     }
 
@@ -108,7 +139,17 @@ public class Enemy : MonoBehaviour
 
     private void Shoot(Vector3 direction)
     {
-        Instantiate(projectile, (transform.position + (direction * 2)), Quaternion.LookRotation(transform.forward, direction));
+        Instantiate(projectile, muzzle.transform.position, Quaternion.LookRotation(transform.forward, direction));
+
+        StartCoroutine(muzzle.Fire());
+        sors.PlayOneShot(clips[0]);
+        //spawn a casing
+        var a = Instantiate(caseThing, 
+            GunSprite.gameObject.transform.position, 
+             Quaternion.LookRotation(transform.forward,
+        GunSprite.gameObject.transform.right*(direction.x <.1?1:-1))*Quaternion.Euler(0,0,Random.Range(-30,0)));
+
+
     }
 
     // private void Slash()

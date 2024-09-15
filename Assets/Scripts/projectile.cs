@@ -51,7 +51,7 @@ public class projectile : MonoBehaviour
                     Destroy(this.gameObject, .05f);
             }else if(other.tag != "Player"){
                 if(makeChain){
-                    chainManager.chainInstance.makeChain(other.transform.position);
+                    chainManager.chainInstance.makeChain(transform.position);
                 }
                 if(autoDie)
                     Destroy(this.gameObject, .05f);
