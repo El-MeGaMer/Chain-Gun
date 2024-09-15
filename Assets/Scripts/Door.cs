@@ -32,4 +32,12 @@ public class Door : MonoBehaviour
             sp.color = inactiveColor;
         }
     }
+
+    private void OnCollisionEnter2D(Collision2D other)
+    {
+        if (other.collider.CompareTag("Player") && active)
+        {
+            gameManager.switchLevels();
+        }
+    }
 }
