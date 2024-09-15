@@ -3,7 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using Unity.Mathematics;
+using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.UI;
 using Random = UnityEngine.Random;
 
 public class GameManager : MonoBehaviour
@@ -17,10 +19,14 @@ public class GameManager : MonoBehaviour
     [SerializeField] Vector2 respawnPosition = new Vector2(-20, 0);
     [SerializeField] GameObject player;
     Rigidbody2D playerRb;
+    [SerializeField] Image[] UIHearts;
+    [SerializeField] Color UIHeartsActiveColor;
+    [SerializeField] Color UIHeartsInactiveColor;
 
     //Level info
     [SerializeField] GameObject[] levelPrefabs; //First level is empty
     GameObject currentLevel;
+    Animator currentLevelAnimator;
 
     //UI
     [SerializeField] TMP_Text scoreText;
@@ -50,6 +56,7 @@ public class GameManager : MonoBehaviour
         //First level startup
         UpdateScoreText();
         currentLevel = Instantiate(levelPrefabs[0], new Vector2(0, 0), quaternion.identity); //Loads free level
+        currentLevelAnimator = currentLevel.GetComponent<Animator>();
 
         //Get player rb
         playerRb = player.GetComponentInChildren<Rigidbody2D>();
@@ -64,7 +71,15 @@ public class GameManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
+        //Check for animation
+        if (enemyCount <= 0)
+        {
+            currentLevelAnimator.SetBool("DoorIsOpen", true);
+        }
+        else
+        {
+            currentLevelAnimator.SetBool("DoorIsOpen", false);
+        }
     }
 
     public void switchLevels()
@@ -81,7 +96,8 @@ public class GameManager : MonoBehaviour
     {
         yield return new WaitForSeconds(animationDuration);
         Destroy(currentLevel);
-        currentLevel = Instantiate(levelPrefabs[Random.Range(0, levelPrefabs.Length)], new Vector2(0, 0), quaternion.identity);
+        currentLevel = Instantiate(levelPrefabs[Random.Range(1, levelPrefabs.Length)], new Vector2(0, 0), quaternion.identity);
+        currentLevelAnimator = currentLevel.GetComponent<Animator>();
         player.transform.position = respawnPosition;
         transitionAnimator.SetBool("GoBlack", false);
         playerRb.constraints = RigidbodyConstraints2D.None;
@@ -90,5 +106,21 @@ public class GameManager : MonoBehaviour
     void UpdateScoreText()
     {
         scoreText.text = "Score: " + score;
+    }
+
+    public void SetUIHealth(int health)
+    {
+        if (health <= 0 || health > 3)
+        {
+            return;
+        }
+        for (int i = 0; i < 3; i++)
+        {
+            UIHearts[i].color = UIHeartsInactiveColor;
+            if (i < health)
+            {
+                UIHearts[i].color = UIHeartsActiveColor;
+            }
+        }
     }
 }
