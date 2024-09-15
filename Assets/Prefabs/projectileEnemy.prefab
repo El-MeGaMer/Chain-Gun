@@ -176,4 +176,4 @@ MonoBehaviour:
   ignorePlayer: 0
   autoDie: 1
   makeChain: 0
-  ignoreTag: 
+  ignoreTag: enemy

@@ -45,11 +45,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Mobs:
-  - EnemyPrefab: {fileID: 535088676626141715, guid: b18891460da19f54581b8c4a3fa20baf, type: 3}
+  - EnemyPrefab: {fileID: 1920722255047004055, guid: 30a9ae5111741a446b242700e60f0036, type: 3}
     cost: 2
-  - EnemyPrefab: {fileID: 535088676626141715, guid: b0afe36a58f43344eb3cba35ad573c53, type: 3}
+  - EnemyPrefab: {fileID: 6454992679956443591, guid: de33d25766377f5478ebf2bafe692e1e, type: 3}
     cost: 3
-  - EnemyPrefab: {fileID: 535088676626141715, guid: 5b88405aca5896744a815475e3029779, type: 3}
-    cost: 1
   CurrentWave: 0
   SpawningMobs: []

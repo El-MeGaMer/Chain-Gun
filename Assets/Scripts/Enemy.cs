@@ -124,19 +124,16 @@ public class Enemy : MonoBehaviour
 
     public void DeadTime()
     {
+        
+        GameManager.Instance.enemyCount--;
+        Destroy(muzzle.gameObject);
         GetComponent<BoxCollider2D>().enabled = false;
         // GetComponent<SpriteRenderer>().sprite = dedSprite;
         // GetComponent<SpriteRenderer>().color = dedColor;
-        sors.PlayOneShot(clips[Random.Range(1,2)]);
+        sors.PlayOneShot(clips[Random.Range(1,3)]);
         animator.Play("ded");
         Destroy(this);
     }
-
-    void GameOver()
-    {
-        SceneManager.LoadScene(3);
-    }
-
     private void Shoot(Vector3 direction)
     {
         Instantiate(projectile, muzzle.transform.position, Quaternion.LookRotation(transform.forward, direction));
@@ -147,7 +144,7 @@ public class Enemy : MonoBehaviour
         var a = Instantiate(caseThing, 
             GunSprite.gameObject.transform.position, 
              Quaternion.LookRotation(transform.forward,
-        GunSprite.gameObject.transform.right*(direction.x <.1?1:-1))*Quaternion.Euler(0,0,Random.Range(-30,0)));
+        GunSprite.gameObject.transform.right*(direction.x <.1?1:-1))* Quaternion.Euler(0, 0, Random.Range(0, 30)*(direction.x < .1 ? -1 : 1)));
 
 
     }

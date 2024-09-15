@@ -23,6 +23,6 @@ public class casingScript : MonoBehaviour
         sors.pitch = Random.Range(.9f,1.5f);
         sors.Play();
 
-        Destroy(this,8);
+        Destroy(this.gameObject,8);
     }
 }

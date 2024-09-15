@@ -5,6 +5,7 @@ using TMPro;
 using Unity.Mathematics;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using Random = UnityEngine.Random;
 
@@ -14,11 +15,11 @@ public class GameManager : MonoBehaviour
     public static GameManager Instance;
 
     //Player info
-    int score = 0;
+    public int score = 0;
     public int enemyCount = 0;
     [SerializeField] Vector2 respawnPosition = new Vector2(-20, 0);
-    [SerializeField] GameObject player;
-    Rigidbody2D playerRb;
+    // [SerializeField] GameObject player;
+    // Rigidbody2D playerRb;
     [SerializeField] Image[] UIHearts;
     [SerializeField] Color UIHeartsActiveColor;
     [SerializeField] Color UIHeartsInactiveColor;
@@ -35,6 +36,9 @@ public class GameManager : MonoBehaviour
     [SerializeField] GameObject blackTransition;
     Animator transitionAnimator;
     [SerializeField] float animationDuration = 1;
+
+    AudioSource sors;
+    [SerializeField]  AudioClip loopedSong;
 
     void Awake()
     {
@@ -53,13 +57,15 @@ public class GameManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        // sors = GetComponent<AudioSource>();
+        // Invoke("shit", sors.clip.length);
         //First level startup
         UpdateScoreText();
         currentLevel = Instantiate(levelPrefabs[0], new Vector2(0, 0), quaternion.identity); //Loads free level
         currentLevelAnimator = currentLevel.GetComponent<Animator>();
 
         //Get player rb
-        playerRb = player.GetComponentInChildren<Rigidbody2D>();
+        // playerRb = player.GetComponentInChildren<Rigidbody2D>();
 
 
         //Transition startup
@@ -68,17 +74,29 @@ public class GameManager : MonoBehaviour
         transitionAnimator.SetBool("GoBlack", false);
     }
 
+    // void shit(){
+    //     print("shit");
+    //     sors.clip = loopedSong;
+    //     sors.loop = true;
+    //     sors.Play();
+    // }
+
     // Update is called once per frame
     void Update()
     {
-        //Check for animation
-        if (enemyCount <= 0)
-        {
-            currentLevelAnimator.SetBool("DoorIsOpen", true);
-        }
-        else
-        {
-            currentLevelAnimator.SetBool("DoorIsOpen", false);
+        // if(!sors.isPlaying){
+        //     shit();
+        // }
+        if(currentLevel){
+            //Check for animation
+            if (enemyCount <= 0)
+            {
+                currentLevelAnimator.SetBool("DoorIsOpen", true);
+            }
+            else
+            {
+                currentLevelAnimator.SetBool("DoorIsOpen", false);
+            }
         }
     }
 
@@ -87,20 +105,21 @@ public class GameManager : MonoBehaviour
         score++;
         UpdateScoreText();
         transitionAnimator.SetBool("GoBlack", true);
-        playerRb.constraints = RigidbodyConstraints2D.FreezeAll;
+        // playerRb.constraints = RigidbodyConstraints2D.FreezeAll;
         StartCoroutine(levelSwitchCoroutine());
 
     }
 
     IEnumerator levelSwitchCoroutine()
     {
+        SceneManager.LoadScene(2);
         yield return new WaitForSeconds(animationDuration);
-        Destroy(currentLevel);
         currentLevel = Instantiate(levelPrefabs[Random.Range(1, levelPrefabs.Length)], new Vector2(0, 0), quaternion.identity);
         currentLevelAnimator = currentLevel.GetComponent<Animator>();
-        player.transform.position = respawnPosition;
+        // player.transform.position = respawnPosition;
         transitionAnimator.SetBool("GoBlack", false);
-        playerRb.constraints = RigidbodyConstraints2D.None;
+        // playerRb.constraints = RigidbodyConstraints2D.FreezeRotation;
+
     }
 
     void UpdateScoreText()
@@ -110,10 +129,6 @@ public class GameManager : MonoBehaviour
 
     public void SetUIHealth(int health)
     {
-        if (health <= 0 || health > 3)
-        {
-            return;
-        }
         for (int i = 0; i < 3; i++)
         {
             UIHearts[i].color = UIHeartsInactiveColor;

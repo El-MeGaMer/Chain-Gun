@@ -11,12 +11,12 @@ public class EnemySpawner : MonoBehaviour
     private int WaveCost;//The value which dictates how many mobs you can spawn
     public List<GameObject> SpawningMobs = new List<GameObject>();//List where we store the Mobs that are spawning
     private float SpawnInterval;//Value to indicate spawning interval
-    private float TimeUntilSpawn;//Values to indicate how much time passes until the spawn
+    // private float TimeUntilSpawn;//Values to indicate how much time passes until the spawn
 
     //Function to generate Wave
     public void WaveGenerate()
     {
-        WaveCost = CurrentWave * 10;
+        WaveCost = GameManager.Instance.score * 10;
         SpawnMobs();
 
         SpawnInterval = 0;// 0 Value to generate them in an instant
@@ -34,7 +34,7 @@ public class EnemySpawner : MonoBehaviour
             {
                 SpawnedMobs.Add(Mobs[iMob].EnemyPrefab);
                 WaveCost -= RandomMobCost;
-                gameManager.enemyCount++; //Add the enemy to the global counter
+                // gameManager.enemyCount++; //Add the enemy to the global counter
             }
             else
             {
@@ -43,6 +43,7 @@ public class EnemySpawner : MonoBehaviour
         }
         SpawningMobs.Clear();
         SpawningMobs = SpawnedMobs;
+        gameManager.enemyCount = SpawnedMobs.Count;
     }
     // Start is called before the first frame update
     void Start()
@@ -50,29 +51,19 @@ public class EnemySpawner : MonoBehaviour
         gameManager = GameManager.Instance;
 
         WaveGenerate();
-        TimeUntilSpawn = 4;
+        // TimeUntilSpawn = 4;
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (TimeUntilSpawn <= 0)
-        {
             if (SpawningMobs.Count > 0)
             {
                 Instantiate(SpawningMobs[0], transform.position - new Vector3(Random.Range(-10.0f, 10.0f), Random.Range(-10.0f, 10.0f), 0), Quaternion.identity);
                 SpawningMobs.RemoveAt(0);
-                TimeUntilSpawn = SpawnInterval;
             }
         }
-        else
-        {
-            TimeUntilSpawn -= Time.deltaTime;
-        }
-
-
     }
-}
 [System.Serializable]
 public class Mob
 {

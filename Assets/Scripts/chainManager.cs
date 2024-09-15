@@ -30,7 +30,6 @@ public class chainManager : MonoBehaviour
 
         for(int i = 0; i<numberOfLinks;i++) {
             Instantiate(chainLink, lastCoord+(chainDirection*linkLenght*i), Quaternion.LookRotation(transform.forward, chainDirection));
-
         }
         lastCoord = coords;
     }

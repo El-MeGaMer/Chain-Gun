@@ -14,7 +14,9 @@ public class Player : MonoBehaviour
     [Header("Stats")]
     [SerializeField]
     private int health = 3;
+    [SerializeField]
     private bool inv = false;
+    [SerializeField]
     private bool invDmg = false;
     private bool dead = false;
 
@@ -128,7 +130,7 @@ public class Player : MonoBehaviour
         var a = Instantiate(caseThing,
             GunSprite.gameObject.transform.position,
              Quaternion.LookRotation(transform.forward,
-        (GunSprite.gameObject.transform.right * (lookDir.x < .1 ? 1 : -1))) * Quaternion.Euler(0, 0, Random.Range(-30, 0)));
+        (GunSprite.gameObject.transform.right * (lookDir.x < .1 ? 1 : -1))) * Quaternion.Euler(0, 0, Random.Range(0, 30)*(lookDir.x < .1 ? -1 : 1)));
     }
     private void slideTime(InputAction.CallbackContext context)
     {
@@ -220,7 +222,6 @@ public class Player : MonoBehaviour
         }
         hitvfx.Play("hitAnim");
         health--;
-        gameManager.SetUIHealth(health);
         if (health <= 0)
         {
             dead = true;
@@ -236,6 +237,7 @@ public class Player : MonoBehaviour
             inv = true;
             StartCoroutine(invManager());
         }
+        gameManager.SetUIHealth(health);
     }
 
     private IEnumerator invManager()
@@ -256,6 +258,7 @@ public class Player : MonoBehaviour
         Time.timeScale = 1;
 
         yield return new WaitForSeconds(2);
-        SceneManager.LoadScene(3);
+        Destroy(GameManager.Instance);
+        SceneManager.LoadScene(1);
     }
 }
