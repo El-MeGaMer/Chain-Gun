@@ -1,8 +1,10 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using Unity.Mathematics;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class GameManager : MonoBehaviour
 {
@@ -17,7 +19,7 @@ public class GameManager : MonoBehaviour
     Rigidbody2D playerRb;
 
     //Level info
-    [SerializeField] GameObject[] levelPrefabs;
+    [SerializeField] GameObject[] levelPrefabs; //First level is empty
     GameObject currentLevel;
 
     //UI
@@ -47,7 +49,7 @@ public class GameManager : MonoBehaviour
     {
         //First level startup
         UpdateScoreText();
-        currentLevel = Instantiate(levelPrefabs[0], new Vector2(0, 0), quaternion.identity);
+        currentLevel = Instantiate(levelPrefabs[0], new Vector2(0, 0), quaternion.identity); //Loads free level
 
         //Get player rb
         playerRb = player.GetComponentInChildren<Rigidbody2D>();
@@ -78,6 +80,8 @@ public class GameManager : MonoBehaviour
     IEnumerator levelSwitchCoroutine()
     {
         yield return new WaitForSeconds(animationDuration);
+        Destroy(currentLevel);
+        currentLevel = Instantiate(levelPrefabs[Random.Range(0, levelPrefabs.Length)], new Vector2(0, 0), quaternion.identity);
         player.transform.position = respawnPosition;
         transitionAnimator.SetBool("GoBlack", false);
         playerRb.constraints = RigidbodyConstraints2D.None;
