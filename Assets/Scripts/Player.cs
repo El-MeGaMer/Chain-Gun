@@ -58,11 +58,19 @@ public class Player : MonoBehaviour
     [SerializeField]
     GameObject projectile;
     [SerializeField]
+    GameObject caseThing;
+    [SerializeField]
     Animator animContr;
     [SerializeField]
     customMuzzleAnim muzzle;
     [SerializeField]
     Animator hitvfx;
+    [Header("Audio")]
+    [SerializeField]
+    List<AudioClip> clips;
+    [SerializeField]
+    AudioSource sors;
+
 
     private void OnEnable(){
         move.Enable();
@@ -77,6 +85,7 @@ public class Player : MonoBehaviour
 
     // Start is called before the first frame update
     void Awake(){
+        // sors = GetComponent<AudioSource>();
         clickInput.performed += clickTime;
         slide.started += slideTime;
         slide.canceled += slideTimeEnd;
@@ -101,6 +110,12 @@ public class Player : MonoBehaviour
     private void clickTime(InputAction.CallbackContext context){
         Instantiate(projectile, muzzle.transform.position, GunSprite.transform.rotation);
         StartCoroutine(muzzle.Fire());
+        sors.PlayOneShot(clips[Random.Range(0,clips.Count)]);
+        //spawn a casing
+        var a = Instantiate(caseThing, 
+            GunSprite.gameObject.transform.position, 
+             Quaternion.LookRotation(transform.forward,
+        (GunSprite.gameObject.transform.right*(lookDir.x <.1?1:-1)))*Quaternion.Euler(0,0,Random.Range(-30,0)));
     }
     private void slideTime(InputAction.CallbackContext context){
         isSlidin = true;
@@ -182,7 +197,7 @@ public class Player : MonoBehaviour
             move.Disable();
             slide.Disable();
             clickInput.Disable();
-            animContr.Play("playerHit");
+            animContr.Play("deadanim");
             StartCoroutine(GameOver());
         }else{
             invDmg = true;
