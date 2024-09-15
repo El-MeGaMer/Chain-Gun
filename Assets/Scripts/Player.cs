@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.InputSystem;
 using UnityEditor.Rendering.LookDev;
+using UnityEngine.InputSystem.Android;
 
 public class Player : MonoBehaviour
 {
@@ -51,9 +52,17 @@ public class Player : MonoBehaviour
     float maxCamDistance;
     [Header("Visuals")]
     [SerializeField]
+    SpriteRenderer GunSprite;
+    [SerializeField]
     SpriteRenderer BodySprite;
     [SerializeField]
     GameObject projectile;
+    [SerializeField]
+    Animator animContr;
+    [SerializeField]
+    customMuzzleAnim muzzle;
+    [SerializeField]
+    Animator hitvfx;
 
     private void OnEnable(){
         move.Enable();
@@ -90,7 +99,8 @@ public class Player : MonoBehaviour
     }
 
     private void clickTime(InputAction.CallbackContext context){
-        Instantiate(projectile, transform.position+(lookDir*2), BodySprite.transform.rotation);
+        Instantiate(projectile, muzzle.transform.position, GunSprite.transform.rotation);
+        StartCoroutine(muzzle.Fire());
     }
     private void slideTime(InputAction.CallbackContext context){
         isSlidin = true;
@@ -106,11 +116,23 @@ public class Player : MonoBehaviour
         Vector3 newCamPos = camBasePos+Vector3.ClampMagnitude(lookDir*distnace, maxCamDistance);
         playerCam.transform.localPosition = Vector3.Lerp(camBasePos, newCamPos, camSpeed*Time.fixedDeltaTime);
 
-        // print(transform.right);
-        // print(Vector3.right);
-        BodySprite.transform.rotation = Quaternion.LookRotation(transform.forward, lookDir);
-        //to lerp the gun
-        // transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(body.velocity), rotAlpha);
+        GunSprite.transform.rotation = Quaternion.LookRotation(transform.forward, lookDir);
+
+        //set z priority
+        if(lookDir.y >.8 || lookDir.x <.05){
+            GunSprite.sortingOrder = BodySprite.sortingOrder-1;
+        }else{
+            GunSprite.sortingOrder = BodySprite.sortingOrder+1;
+        }
+
+        Vector3 rotVec = GunSprite.gameObject.transform.right*(lookDir.x <.1?-1:1);
+        GunSprite.gameObject.transform.localPosition = 
+            rotVec*(.5f*(1-Mathf.Abs(lookDir.y)))+
+            Vector3.up*((1.2f-Mathf.Abs(lookDir.x))*(lookDir.y <0? -1: 0));
+        //flip the gun
+        GunSprite.flipX = lookDir.x < .1;
+        if(!isSlidin)
+            BodySprite.flipX = lookDir.x < .1;
     }
 
     private void MoveTime() {
@@ -132,6 +154,20 @@ public class Player : MonoBehaviour
         }
         inv = (Mathf.Abs(inertia.magnitude) != 0 && isSlidin ) || invDmg;
         transform.Translate(inertia*Time.fixedDeltaTime);
+
+        if(isSlidin){
+            Vector2 dir = inertia.normalized;
+            bool up = Mathf.Abs(dir.y) > .8;
+            bool right = Mathf.Abs(dir.x) > .8;
+            bool mid = !(up || right);
+            animContr.Play(!(right || up) ? "slideD" : up? "slideU" : "slideR");
+            BodySprite.flipX = dir.x < 0;
+            BodySprite.flipY = dir.y < 0;
+            // print("up: "+up+" | r: "+right+" | mid: "+mid);
+        }else{
+            BodySprite.flipY = false;
+            animContr.Play(Mathf.Abs(inertia.magnitude) >= .1 ? "playerWalk" : "playerIdle");
+        }
     }
 
     //damage
@@ -139,12 +175,14 @@ public class Player : MonoBehaviour
         if(inv){
             return;
         }
+        hitvfx.Play("hitAnim");
         health--;
         if(health <= 0){
             dead = true;
             move.Disable();
             slide.Disable();
             clickInput.Disable();
+            animContr.Play("playerHit");
             StartCoroutine(GameOver());
         }else{
             invDmg = true;
@@ -154,11 +192,20 @@ public class Player : MonoBehaviour
     }
 
     private IEnumerator invManager(){
+        Time.timeScale = 0;
+        animContr.Play("playerHit");
+        yield return new WaitForSecondsRealtime(.2f);
+        Time.timeScale = 1;
+
         yield return new WaitForSeconds(1);
         invDmg = false;
     }
 
     private IEnumerator GameOver(){
+        Time.timeScale = 0;
+        yield return new WaitForSecondsRealtime(.5f);
+        Time.timeScale = 1;
+
         yield return new WaitForSeconds(2);
         SceneManager.LoadScene(3);
     }
