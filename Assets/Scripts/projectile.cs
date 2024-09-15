@@ -36,7 +36,7 @@ public class projectile : MonoBehaviour
         //if its a player projectile
         if(other.tag == "Player" && !ignorePlayer){
             //only the player has this tag so we can check if its null but eh
-            Player plyscrt = other.GetComponentInParent<Player>();
+            Player plyscrt = other.GetComponent<Player>();
             plyscrt.TakeDmg();
             if(autoDie)
                 Destroy(this.gameObject, .05f);
