@@ -12,7 +12,9 @@ public class Player : MonoBehaviour
     [Header("Stats")]
     [SerializeField]
     private int health = 3;
-
+    private bool inv = false;
+    private bool invDmg = false;
+    private bool dead = false;
 
     [Header("Movement")]
     [SerializeField]
@@ -29,9 +31,10 @@ public class Player : MonoBehaviour
     private Vector2 inertia;
     Vector2 direction = Vector2.zero;
     Vector3 lookDir;
-    private bool shoot = false;
     public InputAction move;
     public InputAction clickInput;
+    public InputAction slide;
+    private bool isSlidin;
 
 
 
@@ -54,16 +57,20 @@ public class Player : MonoBehaviour
 
     private void OnEnable(){
         move.Enable();
+        slide.Enable();
         clickInput.Enable();
     }
     private void OnDisable(){
         move.Disable();
+        slide.Disable();
         clickInput.Disable();
     }
 
     // Start is called before the first frame update
     void Awake(){
         clickInput.performed += clickTime;
+        slide.started += slideTime;
+        slide.canceled += slideTimeEnd;
     }
 
     // Update is called once per frame
@@ -76,13 +83,20 @@ public class Player : MonoBehaviour
 
     void FixedUpdate()
     {
-        MoveTime();
-
-        MouseTime();
+        if(!dead){
+            MoveTime();
+            MouseTime();
+        }
     }
 
     private void clickTime(InputAction.CallbackContext context){
         Instantiate(projectile, transform.position+(lookDir*2), BodySprite.transform.rotation);
+    }
+    private void slideTime(InputAction.CallbackContext context){
+        isSlidin = true;
+    }
+    private void slideTimeEnd(InputAction.CallbackContext context){
+        isSlidin = false;
     }
 
     private void MouseTime() {
@@ -100,7 +114,7 @@ public class Player : MonoBehaviour
     }
 
     private void MoveTime() {
-        Vector2 movement= new Vector2(direction.x,direction.y);
+        Vector2 movement= !isSlidin ? new Vector2(direction.x,direction.y) : Vector2.zero;
         float trueSpeed = speed;
         if(Mathf.Abs(inertia.magnitude) <= 3){
             trueSpeed*=dashMulti;
@@ -109,24 +123,43 @@ public class Player : MonoBehaviour
         inertia = Vector3.ClampMagnitude(inertia+movement*trueSpeed, maxSpeed);
 
         Vector2 friction = inertia.normalized*-1*coeficient;
-        inertia +=friction;
+        if(!isSlidin) {
+            inertia +=friction;
+        }
         //if friction would give a negative, instead we round to zero
         if(Mathf.Abs(inertia.magnitude) <= 3) {
             inertia= Vector2.zero;
         }
+        inv = (Mathf.Abs(inertia.magnitude) != 0 && isSlidin ) || invDmg;
         transform.Translate(inertia*Time.fixedDeltaTime);
     }
 
     //damage
     public void TakeDmg() {
+        if(inv){
+            return;
+        }
         health--;
         if(health <= 0){
+            dead = true;
+            move.Disable();
+            slide.Disable();
+            clickInput.Disable();
             StartCoroutine(GameOver());
+        }else{
+            invDmg = true;
+            inv = true;
+            StartCoroutine(invManager());
         }
     }
 
+    private IEnumerator invManager(){
+        yield return new WaitForSeconds(1);
+        invDmg = false;
+    }
+
     private IEnumerator GameOver(){
-        yield return new WaitForSeconds(3);
+        yield return new WaitForSeconds(2);
         SceneManager.LoadScene(3);
     }
 }

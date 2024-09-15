@@ -43,7 +43,7 @@ public class Enemy : MonoBehaviour
         GetComponent<BoxCollider2D>().enabled = false;
         GetComponent<SpriteRenderer>().sprite = dedSprite;
         GetComponent<SpriteRenderer>().color = new Color(40f/255f, 5f/255f, 5/255f);
-        Destroy(this, .1f);
+        Destroy(this);
     }
 
     void GameOver(){

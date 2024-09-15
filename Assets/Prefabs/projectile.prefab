@@ -99,7 +99,7 @@ GameObject:
   - component: {fileID: 2259814114893323961}
   m_Layer: 0
   m_Name: projectile
-  m_TagString: Untagged
+  m_TagString: Projectile
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -231,7 +231,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   direction: {x: 0, y: 0}
   speed: 60
-  team: 0
+  ignorePlayer: 1
+  autoDie: 1
+  makeChain: 1
+  ignoreTag: Chain
 --- !u!50 &2259814114893323961
 Rigidbody2D:
   serializedVersion: 4
