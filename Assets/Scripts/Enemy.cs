@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
+using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -24,6 +25,11 @@ public class Enemy : MonoBehaviour
 
     private float shootTimer;
 
+    private float slashTime;
+    private float slashTimer;
+
+    bool isSlashing=false;
+
     [SerializeField] Sprite dedSprite;
     [SerializeField] Color dedColor;
 
@@ -34,28 +40,32 @@ public class Enemy : MonoBehaviour
         player = FindObjectOfType<Player>().GameObject();
     }
 
+
     // Update is called once per frame
     void Update()
     {
         distance = Vector2.Distance(transform.position, player.transform.position);
         Vector3 direction = player.transform.position - transform.position;
         direction.Normalize();
-        float angle = Mathf.Atan2(direction.y, direction.x)*Mathf.Rad2Deg;
+        float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
         shootInterval = Random.Range(3, 5);
+        // SlashTimer();
 
-        switch(typeEnemy){
+        switch (typeEnemy)
+        {
             case 1:
-            viewDistance=20;
-            break;
+                viewDistance = 20;
+                break;
             case 2:
-            viewDistance=30;
-            break;
+                viewDistance = 30;
+                break;
             case 3:
-            viewDistance=40;
-            break;
+                viewDistance = 40;
+                break;
         }
 
-        if (distance < viewDistance){
+        if (distance < viewDistance)
+        {
             transform.position = Vector2.MoveTowards(this.transform.position, player.transform.position, speed * Time.deltaTime);
             transform.rotation = Quaternion.Euler(Vector3.forward * angle);
             if (typeEnemy != 1)
@@ -65,16 +75,22 @@ public class Enemy : MonoBehaviour
                     Shoot(direction);
                     shootTimer = shootInterval;
                 }
-                else
-                {
-                    shootTimer -= Time.deltaTime;
-                }
             }
+            // else if (typeEnemy == 1)
+            // {
+            //     if (distance <= 5)
+            //     {
+            //         slashTime-=Time.deltaTime;
+            //         Slash();
+            //         slashTime=1;
+            //     }
+            // }
+            shootTimer-= Time.deltaTime;
         }
-        if (distance <= 1)
-        {
-            // GameOver();
-        }
+    //    if (distance <= 1)
+    //    {
+    //        // GameOver();
+    //    }
     }
 
     public void DeadTime()
@@ -92,7 +108,27 @@ public class Enemy : MonoBehaviour
 
     private void Shoot(Vector3 direction)
     {
-        Instantiate(projectile, (transform.position+(direction*2)),Quaternion.LookRotation(transform.forward, direction));
+        Instantiate(projectile, (transform.position + (direction * 2)), Quaternion.LookRotation(transform.forward, direction));
     }
+
+    // private void Slash()
+    // {
+    //     if(!isSlashing){
+    //         projectile.SetActive(true);
+    //         isSlashing=true;
+    //     }
+        
+    // }
+
+    // private void SlashTimer(){
+    //     if (isSlashing){
+    //         slashTimer+=Time.deltaTime;
+    //         if (slashTimer > 1){
+    //             slashTimer=0;
+    //             isSlashing=false;
+    //             projectile.SetActive(false);
+    //         }
+    //     }
+    // }
 
 }
