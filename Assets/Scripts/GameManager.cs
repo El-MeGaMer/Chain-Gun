@@ -3,7 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using Unity.Mathematics;
+using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.UI;
 using Random = UnityEngine.Random;
 
 public class GameManager : MonoBehaviour
@@ -17,6 +19,9 @@ public class GameManager : MonoBehaviour
     [SerializeField] Vector2 respawnPosition = new Vector2(-20, 0);
     [SerializeField] GameObject player;
     Rigidbody2D playerRb;
+    [SerializeField] Image[] UIHearts;
+    [SerializeField] Color UIHeartsActiveColor;
+    [SerializeField] Color UIHeartsInactiveColor;
 
     //Level info
     [SerializeField] GameObject[] levelPrefabs; //First level is empty
@@ -101,5 +106,21 @@ public class GameManager : MonoBehaviour
     void UpdateScoreText()
     {
         scoreText.text = "Score: " + score;
+    }
+
+    public void SetUIHealth(int health)
+    {
+        if (health <= 0 || health > 3)
+        {
+            return;
+        }
+        for (int i = 0; i < 3; i++)
+        {
+            UIHearts[i].color = UIHeartsInactiveColor;
+            if (i < health)
+            {
+                UIHearts[i].color = UIHeartsActiveColor;
+            }
+        }
     }
 }
