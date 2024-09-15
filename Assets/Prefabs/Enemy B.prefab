@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 6672272158428785421}
   - component: {fileID: 6757795089685903561}
   m_Layer: 0
-  m_Name: Enemy
+  m_Name: Enemy B
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -76,7 +76,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_Sprite: {fileID: 2747690628134850419, guid: b670ab75dde984907b8570040daa08c5, type: 3}
-  m_Color: {r: 0.5849056, g: 0.091598384, b: 0.091598384, a: 1}
+  m_Color: {r: 0, g: 0.121879816, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -99,9 +99,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   player: {fileID: 0}
-  speed: 5
+  speed: 10
   dedSprite: {fileID: 2747690628134850419, guid: b670ab75dde984907b8570040daa08c5, type: 3}
-  dedColor: {r: 0.31132078, g: 0.04258634, b: 0.04258634, a: 0}
+  dedColor: {r: 0.07409222, g: 0.10751927, b: 0.3490566, a: 0}
 --- !u!61 &6757795089685903561
 BoxCollider2D:
   m_ObjectHideFlags: 0

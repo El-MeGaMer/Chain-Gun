@@ -14,6 +14,7 @@ public class Enemy : MonoBehaviour
     private float distance;
 
     [SerializeField] Sprite dedSprite;
+    [SerializeField] Color dedColor;
 
     // Start is called before the first frame update
     void Start()
@@ -30,7 +31,7 @@ public class Enemy : MonoBehaviour
         direction.Normalize();
         float angle=Mathf.Atan2(direction.y,direction.x);
         
-        if (distance < 10){
+        if (distance < 20){
         transform.position=Vector2.MoveTowards(this.transform.position,player.transform.position,speed*Time.deltaTime);
         transform.rotation=Quaternion.Euler(Vector3.forward*angle); 
         }
@@ -42,7 +43,7 @@ public class Enemy : MonoBehaviour
     public void DeadTime(){
         GetComponent<BoxCollider2D>().enabled = false;
         GetComponent<SpriteRenderer>().sprite = dedSprite;
-        GetComponent<SpriteRenderer>().color = new Color(40f/255f, 5f/255f, 5/255f);
+        GetComponent<SpriteRenderer>().color = dedColor;
         Destroy(this);
     }
 
