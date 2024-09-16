@@ -4,8 +4,6 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.InputSystem;
-using UnityEditor.Rendering.LookDev;
-using UnityEngine.InputSystem.Android;
 
 public class Player : MonoBehaviour
 {
@@ -258,7 +256,7 @@ public class Player : MonoBehaviour
         Time.timeScale = 1;
 
         yield return new WaitForSeconds(2);
-        Destroy(GameManager.Instance);
+        Destroy(GameManager.Instance.gameObject);
         SceneManager.LoadScene(1);
     }
 }

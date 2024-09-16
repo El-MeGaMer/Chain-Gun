@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
-using UnityEditor.UIElements;
+
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -35,6 +35,8 @@ public class Enemy : MonoBehaviour
     AudioSource sors;
     [SerializeField]
     GameObject caseThing;
+
+    int shit = 1;
 
     private float shootTimer;
     
@@ -125,7 +127,8 @@ public class Enemy : MonoBehaviour
     public void DeadTime()
     {
         
-        GameManager.Instance.enemyCount--;
+        GameManager.Instance.enemyCount-=shit;
+        shit=0;
         Destroy(muzzle.gameObject);
         GetComponent<BoxCollider2D>().enabled = false;
         // GetComponent<SpriteRenderer>().sprite = dedSprite;
